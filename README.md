@@ -1,1 +1,0 @@
-# mini-store-app
