@@ -1,43 +1,26 @@
 from app import app
-from flask import request, jsonify
+from flask import request, jsonify, render_template, redirect
 from backend import orders_dao, product_dao
 import json
 
-@app.route('/')
+@app.route('/', methods=["GET", "POST"])
 def getAllProductData():
     object_data = product_dao.getProduct()
     products_data = object_data.getProductData()
-
-    response = []
-
-    for (product_id, uom_id, name, unit_price) in products_data:
-        response.append({
-            "product_id" : product_id,
-            "uom_id" : uom_id,
-            "name" : name,
-            "unit_price" : unit_price
-        })
     
-    return response
+    return render_template("product.html", p_data=products_data)
 
-@app.route('/insertdata', methods=["POST"])
+@app.route('/insertdata', methods=["GET", "POST"])
 def insertProductData():
-    data = request.json
-    objectData = product_dao.getProduct()
-    inserted_data = objectData.insertProductData(data)
-
-    if inserted_data:
-        response = jsonify({
-            "status" :200,
-            "message" : "successfully"
-        })
+    if request.method == "GET":
+        return redirect("url_for('base')")
     else:
-        response = jsonify({
-            "status" : 200,
-            "message" : "faill"
-        })
-    
-    return response
+        data = request.json
+        objectData = product_dao.getProduct()
+        inserted_data = objectData.insertProductData(data)
+
+        render_template("product.html")
+
 
 @app.route('/update/<int:productid>', methods=["POST"])
 def updateProductData(productid):
