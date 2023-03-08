@@ -25,7 +25,7 @@ functions of managing products and order controls for small markets.
 
 ## Used in the project
 - Backend : Python, Flask
-- Frontend : HTML, CSS, Bootstrap
+- Frontend : HTML, CSS, Bootstrap, javascript
 - Database : MySQL
 - Docker
 
