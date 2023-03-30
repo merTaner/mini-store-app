@@ -11,22 +11,16 @@ class getProduct(object):
         
         return product_data
 
-    def insertProductData(self, product_data):
-        unit_type = product_data['uom_id']
-        name = product_data['name']
-        unit_price = product_data['unit_price']
+    def insertProductData(self, unit_type, name, unit_price):
 
         self.cursor.execute("INSERT INTO PRODUCTS(UOM_ID, NAME, UNIT_PRICE) VALUES(%s,%s,%s);", (unit_type, name, unit_price))
         self.connection.commit()
 
         return self.cursor.rowcount
     
-    def updateProduct(self, product_data, productid):
-        unit_type = product_data['uom_id']
-        name = product_data['name']
-        unit_price = product_data['unit_price']
+    def updateProduct(self, uom_type, name, unit_price, productid):
 
-        self.cursor.execute("UPDATE PRODUCTS SET UOM_ID = '"+unit_type+"', NAME = '"+name+"', UNIT_PRICE = '"+unit_price+"' WHERE products_id = '"+str(productid)+"' ")
+        self.cursor.execute("UPDATE PRODUCTS SET UOM_ID = '"+uom_type+"', NAME = '"+name+"', UNIT_PRICE = '"+unit_price+"' WHERE products_id = '"+str(productid)+"' ")
         self.connection.commit()
 
         return self.cursor.rowcount

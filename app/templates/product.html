@@ -1,34 +1,77 @@
 {% extends "base.html" %}
 
 {% block body %}
+<div class="container">
+  <h2 class="text-center bg-primary">PRODUCT MANAGMENT PAGE</h2>
+  <table class="table table-bordered" >
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Uom Type</th>
+          <th scope="col">Name</th>
+          <th scope="col">Unit Price</th>
+          <th>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal">Add Product</button>
+              <a href="/orders" class="btn btn-primary btn-sm">Order</a>
+            </th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for item in p_data %}
+              <tr>
+                  <td>{{ item[0] }}</td>
+                  <td>{{ item[1] }}</td>
+                  <td>{{ item[2] }}</td>
+                  <td>{{ item[3] }}</td>
+                  <td><a href="#!" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modalEdit{{ item[0] }}">Edit</a>
+                  <a href="/delete/{{ item[0] }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete ?')">Delete</a></td>
+              </tr>
 
-<table class="table table-bordered">
-    <thead>
-      <tr>
-        <th scope="col">Product ID</th>
-        <th scope="col">Uom Type</th>
-        <th scope="col">Name</th>
-        <th scope="col">Unit Price</th>
-        <th>
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal">Add Product</button>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for item in p_data %}
-            <tr>
-                <td>{{ item[0] }}</td>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
-                <td>{{ item[3] }}</td>
-                <td><button type="button" class="btn btn-danger btn-sm">Delete</button>
-                    <button type="button" class="btn btn-warning btn-sm">Edit</button></td>
-            </tr>
-      {% endfor %}
-    </tbody>
+              <!-- Modal -->
+              <div id="modalEdit{{ item[0] }}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Edit Product</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ url_for('updateProductData') }}" method="POST">
+                            <div class="form-group">
+                                <label>Uom Type</label>
+                                <input type="hidden" name="prduct_id" value="{{ item[0] }}">
+                                <select name="uom_type" class="form-control">
+                                  <option value="1">Each</option>
+                                  <option value="2">Kg</option>
+                                </select>
+                              </div>
+                              <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" name="name" value="{{ item[2] }}">
+                              </div>
+                              <div class="form-group">
+                                <label>Unit Price</label>
+                                <input type="text" class="form-control" name="unit_price" value="{{ item[3] }}">
+                              </div>
+                              <div class="form-group">
+                                <button type="submit" class="btn btn-warning">Update</button>
+                              </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>      
+
+          {% endfor %}
+      </tbody>
   </table>
-
+</div>
 
 <!-- Modal -->
 <div id="myModal" class="modal fade" role="dialog">
@@ -38,13 +81,16 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
+          <h4 class="modal-title">Add Product</h4>
         </div>
         <div class="modal-body">
             <form action="{{ url_for('insertProductData') }}" method="POST">
                 <div class="form-group">
-                    <label>Uom Type (1-Each 2-Kg)</label>
-                    <input type="text" class="form-control" name="uom_type">
+                    <label>Uom Type</label>
+                    <select class="form-control" name="uom_type">
+                      <option value="1">Each</option>
+                      <option value="2">Kg</option>
+                    </select>
                   </div>
                   <div class="form-group">
                     <label>Name</label>
@@ -54,11 +100,13 @@
                     <label>Unit Price</label>
                     <input type="text" class="form-control" name="unit_price">
                   </div>
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
             </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
         </div>
       </div>
   

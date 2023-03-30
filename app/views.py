@@ -1,7 +1,8 @@
 from app import app
-from flask import request, jsonify, render_template, redirect
+from flask import request, jsonify, render_template, redirect, url_for
 from backend import orders_dao, product_dao
 import json
+from datetime import datetime
 
 @app.route('/', methods=["GET", "POST"])
 def getAllProductData():
@@ -10,117 +11,79 @@ def getAllProductData():
     
     return render_template("product.html", p_data=products_data)
 
-@app.route('/insertdata', methods=["GET", "POST"])
+@app.route('/insertdata', methods=["POST"])
 def insertProductData():
-    if request.method == "GET":
-        return redirect("url_for('base')")
-    else:
-        data = request.json
-        objectData = product_dao.getProduct()
-        inserted_data = objectData.insertProductData(data)
+    uom_type = request.form['uom_type']
+    name = request.form['name']
+    unit_price = request.form['unit_price']
 
-        render_template("product.html")
-
-
-@app.route('/update/<int:productid>', methods=["POST"])
-def updateProductData(productid):
-    data = request.json
     objectData = product_dao.getProduct()
-    update_data = objectData.updateProduct(product_data=data, productid=productid)
+    inserted_data = objectData.insertProductData(uom_type, name, unit_price)
 
-    if update_data:
-        response = jsonify({
-            "status" :200,
-            "message" : "successfully"
-        })
-    else:
-        response = jsonify({
-            "status" : 200,
-            "message" : "faill"
-        })
-    
-    return response
+    return redirect(url_for('getAllProductData'))
+
+
+@app.route('/update', methods=["POST"])
+def updateProductData():
+    product_id = request.form['prduct_id'] 
+    uom_type = request.form['uom_type']
+    name = request.form['name']
+    unit_price = request.form['unit_price']
+
+    objectData = product_dao.getProduct()
+    update_data = objectData.updateProduct(uom_type=uom_type, name=name, unit_price=unit_price, productid=product_id)
+
+    return redirect(url_for('getAllProductData'))
+
+
 
 @app.route('/delete/<int:productid>', methods=["GET"])
 def deleteProductData(productid):
     objectData = product_dao.getProduct()
     delete_data = objectData.deleteProduct(productid=productid)
 
-    if delete_data != None:
-        response = jsonify({
-            "status" :200,
-            "message" : "successfully"
-        })
-    else:
-        response = jsonify({
-            "status" : 200,
-            "message" : "faill"
-        })
-    
-    return response
+    return redirect(url_for('getAllProductData'))
 
 
 @app.route('/orders')
 def ordersData():
     object_data = orders_dao.getOrders()
-    orders_data = object_data.getOrdersData()
-
-    return orders_data
-
-@app.route('/orderDetail', methods=["POST"])
-def order_detail():
-    object_data = orders_dao.getOrders()
-    orderdetail = object_data.getOrderDetail(order_id=3)
-
-    if orderdetail:
-        response = jsonify({
-            "status" :orderdetail,
-            "message" : "successfully"
-        })
-
-    else:
-        response = jsonify({
-            "status" : 200,
-            "message" : "faill"
-        })
+    orders_data = object_data.getOrdersData() 
     
-    return response 
+    product_object = product_dao.getProduct()
+    product_data = product_object.getProductData()
 
+    return render_template('order.html', o_data = orders_data, product_data = product_data)
 
-
-@app.route('/addOrder', methods=["POST"])
+@app.route('/addOrder', methods=["GET", "POST"])
 def addOrder():
-    data = {
-            "customer_name" : "Mert Taner",
-            "total": "500",
-            "date":"20230204",
-            "order_details": [
-                {
-                    'product_id': 1,
-                    'amount': 5,     
-                    'total_price': 70
-                },
-                {
-                    'product_id': 2,
-                    'amount': 5,       
-                    'total_price': 60
-                },
-            ]
-        }
-    object_data = orders_dao.getOrders()
-    insert_order = object_data.addOrder(order_data=data)
-
-    if insert_order:
-        response = jsonify({
-            "status" :200,
-            "message" : "successfully"
-        })
-
+    if request.method == "GET":
+        return render_template('order.html')
     else:
-        response = jsonify({
-            "status" : 200,
-            "message" : "faill"
-        })
-    
-    return response
+        data = {
+                "customer_name" : request.form['customer_name'],
+                "total": request.form['total_price'],
+                "date": datetime.now(),
+                "order_details": [
+                    {
+                        'product_id': request.form['product_id'],
+                        'amount': request.form['amount'],
+                        'total_price': request.form['total_price']
+                    },
+                ]
+            }
+        object_data = orders_dao.getOrders()
+        insert_order = object_data.addOrder(order_data=data)
+
+        return redirect(url_for('ordersData'))
+
+@app.route('/orderDetail/<int:order_id>', methods=["GET", "POST"])
+def order_detail(order_id):
+    if request.method == "GET":
+        object_data = orders_dao.getOrders()
+        orderdetail = object_data.getOrderDetail(order_id)
+
+        return render_template('order_detail.html', order_detail_data = orderdetail)
+    else:
+        return render_template('order_detail.html')
 

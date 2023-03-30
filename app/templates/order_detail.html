@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block body %} 
+
+    <div class="container">
+        <div class="text-center">
+            <h2 class="text-center bg-warning">ORDER MANAGMENT PAGE</h2>     
+            <table class="table table-bordered" id="order-table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col" class="text-center">Product Name</th>
+                    <th scope="col" class="text-center">Amount</th>
+                    <th scope="col" class="text-center">Unit Price</th>
+                    <th scope="col" class="text-center">Total</th>
+                    <th class="text-center">
+                        <a href="/" class="btn btn-primary btn-sm">Products</a>
+                        <a href="/orders" class="btn btn-primary btn-sm">Orders</a><br>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for key in order_detail_data %}
+                        <tr>
+                            <td>{{ key[0] }}</td>
+                            <td>{{ key[3] }}</td>
+                            <td>{{ key[1] }}</td>
+                            <td>{{ key[4] }}</td>
+                            <td>{{ key[2] }}</td>
+                        </tr>   
+                    {% endfor %}  
+                 </tbody>
+            </table>    
+            
+        </div>
+    </div>
+
+{% endblock %}
